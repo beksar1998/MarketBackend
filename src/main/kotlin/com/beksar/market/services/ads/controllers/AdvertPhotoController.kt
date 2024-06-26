@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("api/v1/advert/photo")
-class ProductPhotoController(private val service: AdvertPhotoService) {
+class AdvertPhotoController(private val service: AdvertPhotoService) {
 
 
     @PostMapping("{productId}")
