@@ -40,6 +40,9 @@ dependencies {
 
     implementation("javax.xml.bind:jaxb-api:2.3.1")
 
+
+    implementation("com.ibm.icu:icu4j:75.1")
+
 }
 
 tasks.withType<KotlinCompile> {

@@ -7,7 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface AdvertRepository : JpaRepository<AdvertEntity, String> {
 
-    fun findAllByTitleContainingIgnoreCase(name: String,pageable: Pageable): Page<AdvertEntity>
+    fun findAllByTitleContainingIgnoreCaseOrTitleContainingIgnoreCaseOrTitleContainingIgnoreCase(
+        name: String,
+        nameRU: String,
+        nameEN: String,
+        pageable: Pageable
+    ): Page<AdvertEntity>
 
     fun findAllByIdIn(ids: List<String>, pageable: Pageable): Page<AdvertEntity>
 }
