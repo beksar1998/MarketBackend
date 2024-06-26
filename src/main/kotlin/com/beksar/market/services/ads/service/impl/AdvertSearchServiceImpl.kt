@@ -42,7 +42,8 @@ class AdvertSearchServiceImpl(
                 AdvertSearchResponse(
                     id = advert.id,
                     description = advert.description,
-                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo }
+                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
+                    date = advert.date
                 )
             }
 
@@ -66,7 +67,8 @@ class AdvertSearchServiceImpl(
                 AdvertSearchResponse(
                     id = advert.id,
                     description = advert.description,
-                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo }
+                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
+                    date = advert.date
                 )
             }
 

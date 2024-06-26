@@ -7,6 +7,7 @@ fun AdvertEntity.toResponse(): AdvertResponse {
     return AdvertResponse(
         id = id,
         description = description,
-        status = status
+        status = status,
+        date = date
     )
 }
