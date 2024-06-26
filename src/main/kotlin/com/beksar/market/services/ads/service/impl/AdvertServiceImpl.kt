@@ -47,11 +47,9 @@ class AdvertServiceImpl(
     }
 
     override fun advert(advertId: String): AdvertResponse {
-        val photos = photos(listOfNotNull(advertId)).filter { it.advertId == advertId }
-            .map { it.photo }
         return repository.findById(advertId)
             .checkNotNull()
-            .toResponse(photos)
+            .toResponse()
     }
 
     override fun adverts(searchParams: SearchPagingParams): BasePageResponse<AdvertResponse> {
@@ -74,12 +72,9 @@ class AdvertServiceImpl(
                 pageable = searchParams.toPageable(sort)
             )
         }
-        val photos = photos(adverts.content.map { it.id })
         return adverts
             .paging { p ->
-                p.toResponse(
-                    photos = photos.filter { it.advertId == p.id }.map { it.photo },
-                )
+                p.toResponse()
             }
     }
 
