@@ -60,17 +60,32 @@ class AdvertServiceImpl(
             Sort.by(sortDirection, searchParams.sortField)
         }
         val adverts = if (searchParams.search.isBlank()) {
-            repository.findAll(searchParams.toPageable(sort))
+            if (searchParams.status == null) {
+                repository.findAll(searchParams.toPageable(sort))
+            } else {
+                repository.findAllByStatus(searchParams.status, searchParams.toPageable(sort))
+            }
         } else {
             val latin = Transliterator.getInstance(CYRILLIC_TO_LATIN).transliterate(searchParams.search)
             val cyrillic = Transliterator.getInstance(LATIN_TO_CYRILLIC).transliterate(searchParams.search)
 
-            repository.findAllByDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                name = searchParams.search,
-                nameEN = latin,
-                nameRU = cyrillic,
-                pageable = searchParams.toPageable(sort)
-            )
+            if (searchParams.status == null) {
+                repository.findAllByDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                    name = searchParams.search,
+                    nameEN = latin,
+                    nameRU = cyrillic,
+                    pageable = searchParams.toPageable(sort)
+                )
+            } else {
+                repository.findAllByDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndStatus(
+                    name = searchParams.search,
+                    nameEN = latin,
+                    nameRU = cyrillic,
+                    status = searchParams.status,
+                    pageable = searchParams.toPageable(sort)
+                )
+            }
+
         }
         return adverts
             .paging { p ->
