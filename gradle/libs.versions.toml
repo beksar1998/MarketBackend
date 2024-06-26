@@ -1,0 +1,44 @@
+[versions]
+sql-version = "8.0.32"
+swagger-version = "2.2.0"
+jwt-version = "0.11.5"
+dependency-management-version = "1.1.4"
+spring-boot-version = "3.2.5"
+telegram-version = "6.5.0"
+
+
+
+[libraries]
+#MySql
+mysql-driver = { group = "mysql", name = "mysql-connector-java", version.ref = "sql-version" }
+
+#SpringBoot
+springboot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
+springboot-starter-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa" }
+springboot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+springboot-starter-mail = { group = "org.springframework.boot", name = "spring-boot-starter-mail" }
+springboot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security" }
+
+#JetBrains
+jetbrains-kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect" }
+
+#Swagger
+swagger-ui = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "swagger-version" }
+swagger-api = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version.ref = "swagger-version" }
+
+#JWT
+jwt-api = { group = "io.jsonwebtoken", name = "jjwt-api", version.ref = "jwt-version" }
+jwt-impl = { group = "io.jsonwebtoken", name = "jjwt-impl", version.ref = "jwt-version" }
+jwt-jackson = { group = "io.jsonwebtoken", name = "jjwt-jackson", version.ref = "jwt-version" }
+
+#Telegram
+telegram = { group = "org.telegram", name = "telegrambots", version.ref = "telegram-version" }
+
+
+[plugins]
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot-version" }
+spring-dependencymanagement = { id = "io.spring.dependency-management", version.ref = "dependency-management-version" }
+
+[bundles]
+service = ["springboot-starter-web", "springboot-starter-data-jpa", "springboot-starter-validation", "jetbrains-kotlin-reflect"]
