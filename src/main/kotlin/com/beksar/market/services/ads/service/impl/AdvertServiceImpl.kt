@@ -14,6 +14,7 @@ import com.beksar.market.services.ads.models.entity.relations.AdvertPhotoEntity
 import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
 import com.beksar.market.services.ads.service.AdvertService
+import com.ibm.icu.text.Transliterator
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
@@ -64,9 +65,14 @@ class AdvertServiceImpl(
         val adverts = if (searchParams.search.isBlank()) {
             repository.findAll(searchParams.toPageable(sort))
         } else {
-            repository.findAllByTitleContainingIgnoreCase(
-                searchParams.search,
-                searchParams.toPageable(sort)
+            val latin = Transliterator.getInstance(CYRILLIC_TO_LATIN).transliterate(searchParams.search)
+            val cyrillic = Transliterator.getInstance(LATIN_TO_CYRILLIC).transliterate(searchParams.search)
+
+            repository.findAllByTitleContainingIgnoreCaseOrTitleContainingIgnoreCaseOrTitleContainingIgnoreCase(
+                name = searchParams.search,
+                nameEN = latin,
+                nameRU = cyrillic,
+                pageable = searchParams.toPageable(sort)
             )
         }
         val photos = photos(adverts.content.map { it.id })

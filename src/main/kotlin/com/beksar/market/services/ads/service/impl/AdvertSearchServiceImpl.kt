@@ -14,6 +14,9 @@ import com.ibm.icu.text.Transliterator
 import org.springframework.stereotype.Service
 
 
+val CYRILLIC_TO_LATIN = "Cyrillic-Latin"
+val LATIN_TO_CYRILLIC = "Latin-Cyrillic"
+
 @Service
 class AdvertSearchServiceImpl(
     private val advertRepository: AdvertRepository,
@@ -21,8 +24,7 @@ class AdvertSearchServiceImpl(
     private val advertPhotoRepository: AdvertPhotoRepository
 ) : AdvertSearchService {
 
-    val CYRILLIC_TO_LATIN = "Cyrillic-Latin"
-    val LATIN_TO_CYRILLIC = "Latin-Cyrillic"
+
 
     override fun search(params: SearchFilterParams): BasePageResponse<AdvertResponse> {
         return if (params.categoryId != null) {
