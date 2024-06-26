@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*
 class AdvertPhotoController(private val service: AdvertPhotoService) {
 
 
-    @PostMapping("{productId}")
+    @PostMapping("{advertId}")
     fun uploadPhoto(
-        @PathVariable productId: String,
+        @PathVariable advertId: String,
         @RequestBody addPhotoRequest: AddPhotoRequest,
     ): BaseResponse<Boolean> {
-        service.uploadPhoto(productId, addPhotoRequest)
+        service.uploadPhoto(advertId, addPhotoRequest)
         return true.response()
     }
 

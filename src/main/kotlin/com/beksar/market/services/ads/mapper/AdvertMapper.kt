@@ -6,7 +6,6 @@ import com.beksar.market.services.ads.models.entity.AdvertEntity
 fun AdvertEntity.toResponse(photos: List<String>): AdvertResponse {
     return AdvertResponse(
         id = id,
-        title = title,
         description = description,
         photos = photos
     )

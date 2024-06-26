@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface AdvertRepository : JpaRepository<AdvertEntity, String> {
 
-    fun findAllByTitleContainingIgnoreCaseOrTitleContainingIgnoreCaseOrTitleContainingIgnoreCase(
+    fun findAllByDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
         name: String,
         nameRU: String,
         nameEN: String,

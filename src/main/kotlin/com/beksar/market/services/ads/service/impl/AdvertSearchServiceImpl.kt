@@ -30,17 +30,16 @@ class AdvertSearchServiceImpl(
         return if (params.categoryId != null) {
 
             //товары в этой категории
-            val categoryProduct = advertCategoryRepository
+            val categoryCategory = advertCategoryRepository
                 .findAllByCategoryId(params.categoryId)
 
-            val advertIds = categoryProduct.map { it.advertId }
+            val advertIds = categoryCategory.map { it.advertId }
 
             val adverts = advertRepository.findAllByIdIn(advertIds, params.toPageable())
 
             return adverts.paging { advert ->
                 AdvertResponse(
                     id = advert.id,
-                    title = advert.title,
                     description = advert.description,
                     photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo }
                 )
@@ -52,7 +51,7 @@ class AdvertSearchServiceImpl(
             val cyrillic = Transliterator.getInstance(LATIN_TO_CYRILLIC).transliterate(params.search)
 
             val adverts =
-                advertRepository.findAllByTitleContainingIgnoreCaseOrTitleContainingIgnoreCaseOrTitleContainingIgnoreCase(
+                advertRepository.findAllByDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                     name = params.search,
                     nameEN = latin,
                     nameRU = cyrillic,
@@ -64,7 +63,6 @@ class AdvertSearchServiceImpl(
             return adverts.paging { advert ->
                 AdvertResponse(
                     id = advert.id,
-                    title = advert.title,
                     description = advert.description,
                     photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo }
                 )

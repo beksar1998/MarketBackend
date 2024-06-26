@@ -12,38 +12,38 @@ import org.springframework.web.bind.annotation.*
 
 
 @RestController
-@RequestMapping("api/v1/product")
+@RequestMapping("api/v1/advert")
 class AdvertCategoryController(private val service: AdvertCategoryService) {
 
     @Authentication
-    @GetMapping("{productId}/category")
+    @GetMapping("{advertId}/category")
     fun binds(
-        @PathVariable productId: String
+        @PathVariable advertId: String
     ): BaseResponse<List<CategoryResponse>> {
-        return service.categories(productId).response()
+        return service.categories(advertId).response()
     }
 
 
     @Authentication
     @Roles(Role.SUPER_ADMIN, Role.ADMIN)
-    @PostMapping("{productId}/category/{categoryId}")
+    @PostMapping("{advertId}/category/{categoryId}")
     fun bind(
-        @PathVariable productId: String,
+        @PathVariable advertId: String,
         @PathVariable categoryId: String
     ): BaseResponse<Boolean> {
-        service.bind(productId, categoryId)
+        service.bind(advertId, categoryId)
         return true.response()
     }
 
 
     @Authentication
     @Roles(Role.SUPER_ADMIN, Role.ADMIN)
-    @DeleteMapping("{productId}/category/{categoryId}")
+    @DeleteMapping("{advertId}/category/{categoryId}")
     fun unBind(
-        @PathVariable productId: String,
+        @PathVariable advertId: String,
         @PathVariable categoryId: String
     ): BaseResponse<Boolean> {
-        service.unBind(productId, categoryId)
+        service.unBind(advertId, categoryId)
         return true.response()
     }
 }

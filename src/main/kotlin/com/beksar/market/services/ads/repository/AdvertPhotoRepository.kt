@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface AdvertPhotoRepository : JpaRepository<AdvertPhotoEntity, String> {
 
-    fun findAllByAdvertIdIn(productIds: List<String>): List<AdvertPhotoEntity>
+    fun findAllByAdvertIdIn(advertIds: List<String>): List<AdvertPhotoEntity>
 
     fun findByPhoto(photo: String): AdvertPhotoEntity
 }

@@ -7,6 +7,7 @@ import com.beksar.market.core.models.base.BaseResponse
 import com.beksar.market.core.models.paging.SearchPagingParams
 import com.beksar.market.services.ads.models.dto.AddOrUpdateAdvertRequest
 import com.beksar.market.services.ads.models.dto.AdvertResponse
+import com.beksar.market.services.ads.models.entity.AdvertStatus
 import com.beksar.market.services.ads.service.AdvertService
 import com.beksar.market.services.sso.core.annotations.Authentication
 import com.beksar.market.services.sso.core.annotations.Roles
@@ -15,50 +16,61 @@ import org.springframework.data.repository.query.Param
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("api/v1/product")
+@RequestMapping("api/v1/advert")
 class AdvertController(private val service: AdvertService) {
 
 
     @GetMapping
-    fun products(
+    fun adverts(
         @Param("") searchPagingParams: SearchPagingParams
     ): BasePageResponse<AdvertResponse> {
-        return service.products(searchPagingParams)
+        return service.adverts(searchPagingParams)
     }
 
 
-    @GetMapping("{productId}")
-    fun product(@PathVariable productId: String): BaseResponse<AdvertResponse> {
-        return service.product(productId).response()
+    @GetMapping("{advertId}")
+    fun advert(@PathVariable advertId: String): BaseResponse<AdvertResponse> {
+        return service.advert(advertId).response()
     }
 
     @Authentication
     @Roles(Role.SUPER_ADMIN, Role.ADMIN)
     @PostMapping
     fun add(
-        @RequestBody addOrUpdateProductRequest: AddOrUpdateAdvertRequest
+        @RequestBody addOrUpdateAdvertRequest: AddOrUpdateAdvertRequest
     ): BaseResponse<Boolean> {
-        service.add(addOrUpdateProductRequest)
+        service.add(addOrUpdateAdvertRequest)
         return true.response()
     }
 
     @Authentication
     @Roles(Role.SUPER_ADMIN, Role.ADMIN)
-    @PutMapping("{productId}")
+    @PutMapping("{advertId}")
     fun update(
-        @PathVariable productId: String,
-        @RequestBody addOrUpdateProductRequest: AddOrUpdateAdvertRequest
+        @PathVariable advertId: String,
+        @RequestBody addOrUpdateAdvertRequest: AddOrUpdateAdvertRequest
     ): BaseResponse<Boolean> {
-        service.update(productId, addOrUpdateProductRequest)
+        service.update(advertId, addOrUpdateAdvertRequest)
+        return true.response()
+    }
+
+    @Authentication
+    @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+    @PutMapping("{advertId}/status")
+    fun updateStatus(
+        @PathVariable advertId: String,
+        @Param("status") status: AdvertStatus
+    ): BaseResponse<Boolean> {
+        service.changeStatus(advertId, status)
         return true.response()
     }
 
 
     @Authentication
     @Roles(Role.SUPER_ADMIN, Role.ADMIN)
-    @DeleteMapping("{productId}")
-    fun delete(@PathVariable productId: String): BaseResponse<Boolean> {
-        service.delete(productId)
+    @DeleteMapping("{advertId}")
+    fun delete(@PathVariable advertId: String): BaseResponse<Boolean> {
+        service.delete(advertId)
         return true.response()
     }
 }

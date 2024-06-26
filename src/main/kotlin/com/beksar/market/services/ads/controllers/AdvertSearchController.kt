@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-@RequestMapping("api/v1/product/search")
+@RequestMapping("api/v1/advert/search")
 class AdvertSearchController(private val service: AdvertSearchService) {
 
 

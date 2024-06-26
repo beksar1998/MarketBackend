@@ -10,6 +10,7 @@ import com.beksar.market.services.ads.mapper.toResponse
 import com.beksar.market.services.ads.models.dto.AddOrUpdateAdvertRequest
 import com.beksar.market.services.ads.models.dto.AdvertResponse
 import com.beksar.market.services.ads.models.entity.AdvertEntity
+import com.beksar.market.services.ads.models.entity.AdvertStatus
 import com.beksar.market.services.ads.models.entity.relations.AdvertPhotoEntity
 import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
@@ -24,14 +25,13 @@ class AdvertServiceImpl(
     private val advertPhotoRepository: AdvertPhotoRepository,
 ) : AdvertService {
 
-    override fun delete(productId: String) {
-        repository.deleteById(productId)
+    override fun delete(advertId: String) {
+        repository.deleteById(advertId)
     }
 
     override fun add(request: AddOrUpdateAdvertRequest) {
         repository.save(
             AdvertEntity(
-                title = request.title.orEmpty(),
                 description = request.description.orEmpty(),
             )
         )
@@ -41,13 +41,12 @@ class AdvertServiceImpl(
         val entity = repository.findById(advertId).checkNotNull()
         repository.save(
             entity.copy(
-                title = request.title.orEmpty(),
                 description = request.description.orEmpty(),
             )
         )
     }
 
-    override fun product(advertId: String): AdvertResponse {
+    override fun advert(advertId: String): AdvertResponse {
         val photos = photos(listOfNotNull(advertId)).filter { it.advertId == advertId }
             .map { it.photo }
         return repository.findById(advertId)
@@ -55,7 +54,7 @@ class AdvertServiceImpl(
             .toResponse(photos)
     }
 
-    override fun products(searchParams: SearchPagingParams): BasePageResponse<AdvertResponse> {
+    override fun adverts(searchParams: SearchPagingParams): BasePageResponse<AdvertResponse> {
         val sortDirection = searchParams.sortDirection?.direction()
         val sort = if (sortDirection == null) {
             null
@@ -68,7 +67,7 @@ class AdvertServiceImpl(
             val latin = Transliterator.getInstance(CYRILLIC_TO_LATIN).transliterate(searchParams.search)
             val cyrillic = Transliterator.getInstance(LATIN_TO_CYRILLIC).transliterate(searchParams.search)
 
-            repository.findAllByTitleContainingIgnoreCaseOrTitleContainingIgnoreCaseOrTitleContainingIgnoreCase(
+            repository.findAllByDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                 name = searchParams.search,
                 nameEN = latin,
                 nameRU = cyrillic,
@@ -82,6 +81,15 @@ class AdvertServiceImpl(
                     photos = photos.filter { it.advertId == p.id }.map { it.photo },
                 )
             }
+    }
+
+    override fun changeStatus(id: String, status: AdvertStatus) {
+        val entity = repository.findById(id).checkNotNull()
+        repository.save(
+            entity.copy(
+                status = status,
+            )
+        )
     }
 
     private fun photos(advertId: List<String>): List<AdvertPhotoEntity> {
