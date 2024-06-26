@@ -56,10 +56,10 @@ class AdvertController(private val service: AdvertService) {
 
     @Authentication
     @Roles(Role.SUPER_ADMIN, Role.ADMIN)
-    @PutMapping("{advertId}/status")
+    @PutMapping("{advertId}/status/{status}")
     fun updateStatus(
         @PathVariable advertId: String,
-        @Param("status") status: AdvertStatus
+        @PathVariable status: AdvertStatus
     ): BaseResponse<Boolean> {
         service.changeStatus(advertId, status)
         return true.response()
