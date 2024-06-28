@@ -27,6 +27,12 @@ class ResetController(private val service: ResetService) {
         return service.resetPasswordEmailConfirm(request).response()
     }
 
+    @PostMapping("email/confirm/check")
+    fun resetPasswordEmailConfirm(@RequestBody request: ResetPasswordEmailConfirmCheckRequest): BaseResponse<Boolean> {
+        return service.resetPasswordEmailConfirmCheck(request).response()
+    }
+
+
 
     @PostMapping("phone")
     fun resetPasswordPhone(@RequestBody request: ResetPasswordPhoneRequest): BaseResponse<Boolean> {

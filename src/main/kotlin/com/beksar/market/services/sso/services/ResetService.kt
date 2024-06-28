@@ -8,4 +8,5 @@ interface ResetService {
     fun resetPasswordPhone(request: ResetPasswordPhoneRequest): Boolean
     fun resetPasswordPhoneConfirm(request: ResetPasswordPhoneConfirmRequest): Boolean
     fun resetPasswordPhoneConfirmCheck(request: ResetPasswordPhoneConfirmCheckRequest): Boolean
+    fun resetPasswordEmailConfirmCheck(request: ResetPasswordEmailConfirmCheckRequest): Boolean
 }

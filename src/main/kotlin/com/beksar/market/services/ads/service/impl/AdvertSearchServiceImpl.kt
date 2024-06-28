@@ -13,6 +13,7 @@ import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
 import com.beksar.market.services.ads.service.AdvertSearchService
 import com.ibm.icu.text.Transliterator
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 
@@ -73,7 +74,16 @@ class AdvertSearchServiceImpl(
             }
 
         } else {
-            BasePageResponse(emptyList(), 0, 0, 0)
+            val adverts = advertRepository.findAll(params.toPageable(sort = Sort.by(Sort.Direction.DESC, "date")))
+            val advertIds = adverts.content.map { it.id }
+            adverts.paging { advert ->
+                AdvertSearchResponse(
+                    id = advert.id,
+                    description = advert.description,
+                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
+                    date = advert.date
+                )
+            }
         }
     }
 

@@ -71,6 +71,16 @@ class ResetServiceImpl(
         return true
     }
 
+    override fun resetPasswordEmailConfirmCheck(request: ResetPasswordEmailConfirmCheckRequest): Boolean {
+        val user = userRepository.findByEmail(request.email.orEmpty()).checkNotNull(AuthErrors.UserNotFound)
+        if (user.emailConfirmCode != request.code) {
+            httpError(AuthErrors.WrongEmailConfirmationCode)
+        } else if (Date((user.emailConfirmCodeDate?.time ?: 0) + (10 * 60 * 1000)) < Date()) {
+            httpError(AuthErrors.EmailConfirmationCodeDateExpired)
+        }
+        return true
+    }
+
     override fun resetPasswordPhoneConfirm(request: ResetPasswordPhoneConfirmRequest): Boolean {
         val user = userRepository.findByPhone(request.phone.orEmpty()).checkNotNull(AuthErrors.UserNotFound)
 
