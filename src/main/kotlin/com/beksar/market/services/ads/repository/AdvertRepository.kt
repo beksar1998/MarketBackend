@@ -24,5 +24,6 @@ interface AdvertRepository : JpaRepository<AdvertEntity, String> {
     ): Page<AdvertEntity>
 
     fun findAllByIdIn(ids: List<String>, pageable: Pageable): Page<AdvertEntity>
+    fun findAllByIdIn(ids: List<String>): List<AdvertEntity>
     fun findAllByStatus(status : AdvertStatus, pageable: Pageable): Page<AdvertEntity>
 }

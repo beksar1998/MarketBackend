@@ -1,9 +1,6 @@
 package com.beksar.market.services.ads.service.impl
 
-import com.beksar.market.core.extentions.checkNotNull
-import com.beksar.market.core.extentions.direction
-import com.beksar.market.core.extentions.paging
-import com.beksar.market.core.extentions.toPageable
+import com.beksar.market.core.extentions.*
 import com.beksar.market.core.models.base.BasePageResponse
 import com.beksar.market.core.models.paging.SearchPagingParams
 import com.beksar.market.services.ads.mapper.toResponse
@@ -15,6 +12,7 @@ import com.beksar.market.services.ads.models.entity.relations.AdvertPhotoEntity
 import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
 import com.beksar.market.services.ads.service.AdvertService
+import com.beksar.market.services.favourite.repository.FavouriteRepository
 import com.ibm.icu.text.Transliterator
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -23,6 +21,7 @@ import org.springframework.stereotype.Service
 class AdvertServiceImpl(
     private val repository: AdvertRepository,
     private val advertPhotoRepository: AdvertPhotoRepository,
+    private val favouriteRepository: FavouriteRepository
 ) : AdvertService {
 
     override fun delete(advertId: String) {
@@ -30,7 +29,7 @@ class AdvertServiceImpl(
     }
 
     override fun add(request: AddOrUpdateAdvertRequest) {
-        repository.save(
+        repository.saveWithException(
             AdvertEntity(
                 description = request.description.orEmpty(),
             )
@@ -39,7 +38,7 @@ class AdvertServiceImpl(
 
     override fun update(advertId: String, request: AddOrUpdateAdvertRequest) {
         val entity = repository.findById(advertId).checkNotNull()
-        repository.save(
+        repository.saveWithException(
             entity.copy(
                 description = request.description.orEmpty(),
             )
@@ -95,14 +94,10 @@ class AdvertServiceImpl(
 
     override fun changeStatus(id: String, status: AdvertStatus) {
         val entity = repository.findById(id).checkNotNull()
-        repository.save(
+        repository.saveWithException(
             entity.copy(
                 status = status,
             )
         )
-    }
-
-    private fun photos(advertId: List<String>): List<AdvertPhotoEntity> {
-        return advertPhotoRepository.findAllByAdvertIdIn(advertId)
     }
 }

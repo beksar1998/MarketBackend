@@ -3,7 +3,7 @@ package com.beksar.market.services.ads.service.impl
 import com.beksar.market.core.extentions.paging
 import com.beksar.market.core.extentions.toPageable
 import com.beksar.market.core.models.base.BasePageResponse
-import com.beksar.market.services.ads.models.dto.AdvertResponse
+import com.beksar.market.services.ads.mapper.toSearchResponse
 import com.beksar.market.services.ads.models.dto.AdvertSearchResponse
 import com.beksar.market.services.ads.models.dto.SearchFilterParams
 import com.beksar.market.services.ads.models.entity.AdvertStatus
@@ -12,6 +12,9 @@ import com.beksar.market.services.ads.repository.AdvertCategoryRepository
 import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
 import com.beksar.market.services.ads.service.AdvertSearchService
+import com.beksar.market.services.favourite.models.entity.FavouriteEntity
+import com.beksar.market.services.favourite.repository.FavouriteRepository
+import com.beksar.market.services.sso.core.jwt.JWTService
 import com.ibm.icu.text.Transliterator
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -24,7 +27,9 @@ val LATIN_TO_CYRILLIC = "Latin-Cyrillic"
 class AdvertSearchServiceImpl(
     private val advertRepository: AdvertRepository,
     private val advertCategoryRepository: AdvertCategoryRepository,
-    private val advertPhotoRepository: AdvertPhotoRepository
+    private val advertPhotoRepository: AdvertPhotoRepository,
+    private val favouriteRepository: FavouriteRepository,
+    private val jwtService: JWTService
 ) : AdvertSearchService {
 
 
@@ -38,13 +43,12 @@ class AdvertSearchServiceImpl(
             val advertIds = categoryCategory.map { it.advertId }
 
             val adverts = advertRepository.findAllByIdIn(advertIds, params.toPageable())
+            val favourites = favourites()
 
             return adverts.paging { advert ->
-                AdvertSearchResponse(
-                    id = advert.id,
-                    description = advert.description,
+                advert.toSearchResponse(
                     photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
-                    date = advert.date
+                    isFavourite = favourites.contains(advert.id)
                 )
             }
 
@@ -64,24 +68,24 @@ class AdvertSearchServiceImpl(
 
             val advertIds = adverts.content.map { it.id }
 
+            val favourites = favourites()
+
             return adverts.paging { advert ->
-                AdvertSearchResponse(
-                    id = advert.id,
-                    description = advert.description,
+                advert.toSearchResponse(
                     photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
-                    date = advert.date
+                    isFavourite = favourites.contains(advert.id)
                 )
             }
 
         } else {
             val adverts = advertRepository.findAll(params.toPageable(sort = Sort.by(Sort.Direction.DESC, "date")))
             val advertIds = adverts.content.map { it.id }
+            val favourites = favourites()
+
             adverts.paging { advert ->
-                AdvertSearchResponse(
-                    id = advert.id,
-                    description = advert.description,
+                advert.toSearchResponse(
                     photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
-                    date = advert.date
+                    isFavourite = favourites.contains(advert.id)
                 )
             }
         }
@@ -89,6 +93,11 @@ class AdvertSearchServiceImpl(
 
     private fun photos(advertIds: List<String>): List<AdvertPhotoEntity> {
         return advertPhotoRepository.findAllByAdvertIdIn(advertIds)
+    }
 
+    private fun favourites(): List<String> {
+        val userId = jwtService.userIdOrNull ?: return emptyList()
+        val favourites = favouriteRepository.findAllByUserId(userId)
+        return favourites.map { it.advertId }
     }
 }

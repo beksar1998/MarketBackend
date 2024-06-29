@@ -62,7 +62,7 @@ class RegisterServiceImpl(
                     emailConfirmCodeDate = Date(),
                     password = passwordEncoder.encode(request.password)
                 )
-                val new = userRepository.save(entity)
+                val new = userRepository.saveWithException(entity)
                 telegramBotService.sendMessage(
                     ConfirmCodeGenerator.register(
                         request.email,
