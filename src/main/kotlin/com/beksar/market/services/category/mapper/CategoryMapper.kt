@@ -8,6 +8,7 @@ fun CategoryEntity.toResponse(child: List<CategoryResponse> = emptyList()): Cate
         id = this.id,
         title = this.title,
         parentId = this.parentId,
-        child = child
+        child = child,
+        photo = this.photo
     )
 }

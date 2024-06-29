@@ -15,5 +15,6 @@ data class CategoryEntity(
     val id: String = "",
     @Column(nullable = false)
     val title: String = "",
-    val parentId: String? = null
+    val parentId: String? = null,
+    val photo: String = ""
 )

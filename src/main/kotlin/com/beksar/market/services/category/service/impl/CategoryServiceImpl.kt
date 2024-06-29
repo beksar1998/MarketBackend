@@ -74,6 +74,7 @@ class CategoryServiceImpl(private val repository: CategoryRepository) : Category
         repository.saveWithException(
             category.copy(
                 title = request.title,
+                photo = request.photo
             )
         )
     }
@@ -82,7 +83,8 @@ class CategoryServiceImpl(private val repository: CategoryRepository) : Category
         repository.saveWithException(
             CategoryEntity(
                 title = request.title,
-                parentId = request.parentId
+                parentId = request.parentId,
+                photo = request.photo
             )
         )
     }
