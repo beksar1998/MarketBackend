@@ -6,16 +6,19 @@ import com.beksar.market.core.models.base.BasePageResponse
 import com.beksar.market.services.ads.mapper.toSearchResponse
 import com.beksar.market.services.ads.models.dto.AdvertSearchResponse
 import com.beksar.market.services.ads.models.dto.SearchFilterParams
+import com.beksar.market.services.ads.models.entity.AdvertEntity
 import com.beksar.market.services.ads.models.entity.AdvertStatus
 import com.beksar.market.services.ads.models.entity.relations.AdvertPhotoEntity
+import com.beksar.market.services.ads.models.entity.relations.AdvertViewEntity
 import com.beksar.market.services.ads.repository.AdvertCategoryRepository
 import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
+import com.beksar.market.services.ads.repository.AdvertViewRepository
 import com.beksar.market.services.ads.service.AdvertSearchService
-import com.beksar.market.services.favourite.models.entity.FavouriteEntity
 import com.beksar.market.services.favourite.repository.FavouriteRepository
 import com.beksar.market.services.sso.core.jwt.JWTService
 import com.ibm.icu.text.Transliterator
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
@@ -29,7 +32,8 @@ class AdvertSearchServiceImpl(
     private val advertCategoryRepository: AdvertCategoryRepository,
     private val advertPhotoRepository: AdvertPhotoRepository,
     private val favouriteRepository: FavouriteRepository,
-    private val jwtService: JWTService
+    private val jwtService: JWTService,
+    private val advertViewRepository: AdvertViewRepository
 ) : AdvertSearchService {
 
 
@@ -43,14 +47,8 @@ class AdvertSearchServiceImpl(
             val advertIds = categoryCategory.map { it.advertId }
 
             val adverts = advertRepository.findAllByIdIn(advertIds, params.toPageable())
-            val favourites = favourites()
 
-            return adverts.paging { advert ->
-                advert.toSearchResponse(
-                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
-                    isFavourite = favourites.contains(advert.id)
-                )
-            }
+            adverts.ui(advertIds)
 
         } else if (!params.search.isNullOrBlank()) {
 
@@ -67,32 +65,31 @@ class AdvertSearchServiceImpl(
                 )
 
             val advertIds = adverts.content.map { it.id }
-
-            val favourites = favourites()
-
-            return adverts.paging { advert ->
-                advert.toSearchResponse(
-                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
-                    isFavourite = favourites.contains(advert.id)
-                )
-            }
-
+            adverts.ui(advertIds)
         } else {
             val adverts = advertRepository.findAll(params.toPageable(sort = Sort.by(Sort.Direction.DESC, "date")))
             val advertIds = adverts.content.map { it.id }
-            val favourites = favourites()
+            adverts.ui(advertIds)
+        }
+    }
 
-            adverts.paging { advert ->
-                advert.toSearchResponse(
-                    photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
-                    isFavourite = favourites.contains(advert.id)
-                )
-            }
+
+    private fun Page<AdvertEntity>.ui(advertIds: List<String>): BasePageResponse<AdvertSearchResponse> {
+        return this.paging { advert ->
+            advert.toSearchResponse(
+                photos = photos(advertIds).filter { it.advertId == advert.id }.map { it.photo },
+                viewed = viewed(advertIds).count { it.advertId == advert.id },
+                isFavourite = favourites().contains(advert.id)
+            )
         }
     }
 
     private fun photos(advertIds: List<String>): List<AdvertPhotoEntity> {
         return advertPhotoRepository.findAllByAdvertIdIn(advertIds)
+    }
+
+    private fun viewed(advertIds: List<String>): List<AdvertViewEntity> {
+        return advertViewRepository.findAllByAdvertIdIn(advertIds)
     }
 
     private fun favourites(): List<String> {

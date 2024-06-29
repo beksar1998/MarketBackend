@@ -11,8 +11,10 @@ import com.beksar.market.services.ads.mapper.toSearchResponse
 import com.beksar.market.services.ads.models.dto.AdvertResponse
 import com.beksar.market.services.ads.models.dto.AdvertSearchResponse
 import com.beksar.market.services.ads.models.entity.relations.AdvertPhotoEntity
+import com.beksar.market.services.ads.models.entity.relations.AdvertViewEntity
 import com.beksar.market.services.ads.repository.AdvertPhotoRepository
 import com.beksar.market.services.ads.repository.AdvertRepository
+import com.beksar.market.services.ads.repository.AdvertViewRepository
 import com.beksar.market.services.favourite.models.entity.FavouriteEntity
 import com.beksar.market.services.favourite.repository.FavouriteRepository
 import com.beksar.market.services.favourite.service.FavouriteService
@@ -23,7 +25,8 @@ import org.springframework.stereotype.Service
 class FavouriteServiceImpl(
     private val repository: FavouriteRepository,
     private val advertRepository: AdvertRepository,
-    private val advertPhotoRepository: AdvertPhotoRepository
+    private val advertPhotoRepository: AdvertPhotoRepository,
+    private val advertViewRepository : AdvertViewRepository
 ) : FavouriteService {
 
     override fun favourites(
@@ -37,6 +40,7 @@ class FavouriteServiceImpl(
             adverts.find { a -> a.id == it.advertId }?.toSearchResponse(
                 isFavourite = true,
                 photos = photos(advertIds).filter { a -> a.id == it.advertId }.map { it.photo },
+                viewed = viewed(advertIds).count {  a -> a.id == it.advertId },
             ) ?: httpError()
         }
 
@@ -57,5 +61,9 @@ class FavouriteServiceImpl(
 
     private fun photos(advertIds: List<String>): List<AdvertPhotoEntity> {
         return advertPhotoRepository.findAllByAdvertIdIn(advertIds)
+    }
+
+    private fun viewed(advertIds: List<String>): List<AdvertViewEntity> {
+        return advertViewRepository.findAllByAdvertIdIn(advertIds)
     }
 }

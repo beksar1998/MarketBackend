@@ -13,4 +13,5 @@ interface AdvertService {
     fun advert(advertId: String): AdvertResponse
     fun adverts(searchParams: SearchPagingParams): BasePageResponse<AdvertResponse>
     fun changeStatus(id: String, status: AdvertStatus)
+    fun viewed(advertId: String)
 }

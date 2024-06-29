@@ -73,4 +73,10 @@ class AdvertController(private val service: AdvertService) {
         service.delete(advertId)
         return true.response()
     }
+
+    @PutMapping("{advertId}/view")
+    fun viewed(@PathVariable advertId: String): BaseResponse<Boolean> {
+        service.viewed(advertId)
+        return true.response()
+    }
 }

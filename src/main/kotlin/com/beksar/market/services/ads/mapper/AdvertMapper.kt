@@ -16,7 +16,8 @@ fun AdvertEntity.toResponse(): AdvertResponse {
 
 fun AdvertEntity.toSearchResponse(
     isFavourite: Boolean,
-    photos: List<String>
+    photos: List<String>,
+    viewed: Int,
 ): AdvertSearchResponse {
     val advert = this
     return AdvertSearchResponse(
@@ -24,6 +25,7 @@ fun AdvertEntity.toSearchResponse(
         description = advert.description,
         photos = photos,
         date = advert.date,
-        isFavourite = isFavourite
+        isFavourite = isFavourite,
+        viewed = viewed
     )
 }

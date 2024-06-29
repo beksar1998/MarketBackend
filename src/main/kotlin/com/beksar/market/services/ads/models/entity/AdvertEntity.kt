@@ -14,5 +14,5 @@ data class AdvertEntity(
     val description: String = "",
     val date: Date = Date(),
     @Enumerated(EnumType.STRING)
-    val status: AdvertStatus = AdvertStatus.MODERATING
+    val status: AdvertStatus = AdvertStatus.MODERATING,
 )

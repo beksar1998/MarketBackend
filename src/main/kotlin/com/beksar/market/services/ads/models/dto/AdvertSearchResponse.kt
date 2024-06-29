@@ -7,5 +7,6 @@ class AdvertSearchResponse(
     val description: String,
     val photos: List<String>,
     val date: Date,
-    val isFavourite : Boolean
+    val isFavourite: Boolean,
+    val viewed: Int
 )

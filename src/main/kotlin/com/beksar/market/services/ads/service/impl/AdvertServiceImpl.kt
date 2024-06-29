@@ -8,11 +8,11 @@ import com.beksar.market.services.ads.models.dto.AddOrUpdateAdvertRequest
 import com.beksar.market.services.ads.models.dto.AdvertResponse
 import com.beksar.market.services.ads.models.entity.AdvertEntity
 import com.beksar.market.services.ads.models.entity.AdvertStatus
-import com.beksar.market.services.ads.models.entity.relations.AdvertPhotoEntity
-import com.beksar.market.services.ads.repository.AdvertPhotoRepository
+import com.beksar.market.services.ads.models.entity.relations.AdvertViewEntity
 import com.beksar.market.services.ads.repository.AdvertRepository
+import com.beksar.market.services.ads.repository.AdvertViewRepository
 import com.beksar.market.services.ads.service.AdvertService
-import com.beksar.market.services.favourite.repository.FavouriteRepository
+import com.beksar.market.services.sso.core.jwt.JWTService
 import com.ibm.icu.text.Transliterator
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service
 @Service
 class AdvertServiceImpl(
     private val repository: AdvertRepository,
-    private val advertPhotoRepository: AdvertPhotoRepository,
-    private val favouriteRepository: FavouriteRepository
+    private val advertViewRepository: AdvertViewRepository,
+    private val jwtService: JWTService
 ) : AdvertService {
 
     override fun delete(advertId: String) {
@@ -97,6 +97,16 @@ class AdvertServiceImpl(
         repository.saveWithException(
             entity.copy(
                 status = status,
+            )
+        )
+    }
+
+    override fun viewed(advertId: String) {
+        val userId = jwtService.userIdOrNull
+        advertViewRepository.saveWithException(
+            AdvertViewEntity(
+                advertId = advertId,
+                userId = userId
             )
         )
     }
