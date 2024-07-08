@@ -13,6 +13,7 @@ data class AdvertEntity(
     @Column(nullable = false)
     val description: String = "",
     val date: Date = Date(),
+    val userId: String? = null,
     @Enumerated(EnumType.STRING)
     val status: AdvertStatus = AdvertStatus.MODERATING,
 )

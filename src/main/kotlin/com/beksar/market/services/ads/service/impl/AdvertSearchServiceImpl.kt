@@ -46,7 +46,7 @@ class AdvertSearchServiceImpl(
 
             val advertIds = categoryCategory.map { it.advertId }
 
-            val adverts = advertRepository.findAllByIdIn(advertIds, params.toPageable())
+            val adverts = advertRepository.findAllByIdInAndStatus(advertIds, AdvertStatus.ACTIVE, params.toPageable())
 
             adverts.ui(advertIds)
 
@@ -67,7 +67,10 @@ class AdvertSearchServiceImpl(
             val advertIds = adverts.content.map { it.id }
             adverts.ui(advertIds)
         } else {
-            val adverts = advertRepository.findAll(params.toPageable(sort = Sort.by(Sort.Direction.DESC, "date")))
+            val adverts = advertRepository.findAllByStatus(
+                status = AdvertStatus.ACTIVE,
+                pageable = params.toPageable(sort = Sort.by(Sort.Direction.DESC, "date"))
+            )
             val advertIds = adverts.content.map { it.id }
             adverts.ui(advertIds)
         }

@@ -46,12 +46,12 @@ class StorageServiceImpl : StorageService {
             val targetLocation: Path = this.path.resolve(fileName)
             Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
 
-            addTextWatermark(
-                "Market",
-                file.originalFilename?.substringAfterLast('.') ?: "png",
-                targetLocation.toFile(),
-                targetLocation.toFile()
-            )
+//            addTextWatermark(
+//                "Market",
+//                file.originalFilename?.substringAfterLast('.') ?: "png",
+//                targetLocation.toFile(),
+//                targetLocation.toFile()
+//            )
 
             fileName
         } catch (ex: IOException) {

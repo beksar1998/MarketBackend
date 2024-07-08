@@ -4,7 +4,7 @@ import kotlin.random.Random
 
 object ConfirmCodeGenerator {
 
-    fun generate() = Random.nextInt(100000, 999999)
+    fun generate() = 1111//andom.nextInt(100000, 999999)
 
 
     fun register(

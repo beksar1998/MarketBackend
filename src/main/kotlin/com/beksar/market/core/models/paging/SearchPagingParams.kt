@@ -2,7 +2,7 @@ package com.beksar.market.core.models.paging
 
 import com.beksar.market.services.ads.models.entity.AdvertStatus
 
-class SearchPagingParams(
+data class SearchPagingParams(
     val search: String,
     override val page: Int,
     override val size: Int,

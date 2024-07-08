@@ -2,6 +2,7 @@ package com.beksar.market.services.ads.service.impl
 
 import com.beksar.market.core.extentions.*
 import com.beksar.market.core.models.base.BasePageResponse
+import com.beksar.market.core.models.paging.PagingParams
 import com.beksar.market.core.models.paging.SearchPagingParams
 import com.beksar.market.services.ads.mapper.toResponse
 import com.beksar.market.services.ads.models.dto.AddOrUpdateAdvertRequest
@@ -28,10 +29,11 @@ class AdvertServiceImpl(
         repository.deleteById(advertId)
     }
 
-    override fun add(request: AddOrUpdateAdvertRequest) {
+    override fun add(request: AddOrUpdateAdvertRequest, userId: String) {
         repository.saveWithException(
             AdvertEntity(
                 description = request.description.orEmpty(),
+                userId = userId
             )
         )
     }
@@ -92,6 +94,7 @@ class AdvertServiceImpl(
             }
     }
 
+
     override fun changeStatus(id: String, status: AdvertStatus) {
         val entity = repository.findById(id).checkNotNull()
         repository.saveWithException(
@@ -109,5 +112,13 @@ class AdvertServiceImpl(
                 userId = userId
             )
         )
+    }
+
+    override fun myAdverts(userId: String, paging: PagingParams): BasePageResponse<AdvertResponse> {
+        val adverts = repository.findAllByUserId(userId, paging.toPageable())
+        return adverts
+            .paging { p ->
+                p.toResponse()
+            }
     }
 }
