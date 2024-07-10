@@ -32,13 +32,6 @@ class AdvertController(
         return service.adverts(searchPagingParams)
     }
 
-    @GetMapping("mobile")
-    fun advertsMobile(
-        @Param("") searchPagingParams: SearchPagingParams
-    ): BasePageResponse<AdvertResponse> {
-        return service.adverts(searchPagingParams.copy(status = AdvertStatus.ACTIVE))
-    }
-
 
     @GetMapping("{advertId}")
     fun advert(@PathVariable advertId: String): BaseResponse<AdvertResponse> {
@@ -50,10 +43,9 @@ class AdvertController(
     @PostMapping
     fun add(
         @RequestBody addOrUpdateAdvertRequest: AddOrUpdateAdvertRequest
-    ): BaseResponse<Boolean> {
+    ): BaseResponse<String> {
         val userId = jwtService.userId
-        service.add(addOrUpdateAdvertRequest, userId)
-        return true.response()
+        return service.add(addOrUpdateAdvertRequest, userId).response()
     }
 
     @Authentication
@@ -91,12 +83,5 @@ class AdvertController(
     fun viewed(@PathVariable advertId: String): BaseResponse<Boolean> {
         service.viewed(advertId)
         return true.response()
-    }
-
-    @Authentication
-    @GetMapping("my")
-    fun my(@Param("") paging: PagingParams): BasePageResponse<AdvertResponse> {
-        val userId = jwtService.userId
-        return service.myAdverts(userId, paging)
     }
 }

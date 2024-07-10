@@ -9,11 +9,10 @@ import com.beksar.market.services.ads.models.entity.AdvertStatus
 
 interface AdvertService {
     fun delete(advertId: String)
-    fun add(request: AddOrUpdateAdvertRequest, userId: String)
+    fun add(request: AddOrUpdateAdvertRequest, userId: String) : String
     fun update(advertId: String, request: AddOrUpdateAdvertRequest)
     fun advert(advertId: String): AdvertResponse
     fun adverts(searchParams: SearchPagingParams): BasePageResponse<AdvertResponse>
     fun changeStatus(id: String, status: AdvertStatus)
     fun viewed(advertId: String)
-    fun myAdverts(userId: String,paging: PagingParams): BasePageResponse<AdvertResponse>
 }

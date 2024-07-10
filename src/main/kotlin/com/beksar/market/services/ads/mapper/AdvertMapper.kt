@@ -26,6 +26,7 @@ fun AdvertEntity.toSearchResponse(
         photos = photos,
         date = advert.date,
         isFavourite = isFavourite,
-        viewed = viewed
+        viewed = viewed,
+        status = status
     )
 }

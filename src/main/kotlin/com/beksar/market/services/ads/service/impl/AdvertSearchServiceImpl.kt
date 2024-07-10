@@ -1,9 +1,12 @@
 package com.beksar.market.services.ads.service.impl
 
+import com.beksar.market.core.extentions.direction
 import com.beksar.market.core.extentions.paging
 import com.beksar.market.core.extentions.toPageable
 import com.beksar.market.core.models.base.BasePageResponse
+import com.beksar.market.core.models.paging.PagingParams
 import com.beksar.market.services.ads.mapper.toSearchResponse
+import com.beksar.market.services.ads.models.dto.AdvertResponse
 import com.beksar.market.services.ads.models.dto.AdvertSearchResponse
 import com.beksar.market.services.ads.models.dto.SearchFilterParams
 import com.beksar.market.services.ads.models.entity.AdvertEntity
@@ -38,6 +41,12 @@ class AdvertSearchServiceImpl(
 
 
     override fun search(params: SearchFilterParams): BasePageResponse<AdvertSearchResponse> {
+        val sortDirection = params.sortDirection?.direction()
+        val sort = if (sortDirection == null) {
+            Sort.by(Sort.Direction.DESC, "date")
+        } else {
+            Sort.by(sortDirection, params.sortField)
+        }
         return if (params.categoryId != null) {
 
             //товары в этой категории
@@ -46,7 +55,8 @@ class AdvertSearchServiceImpl(
 
             val advertIds = categoryCategory.map { it.advertId }
 
-            val adverts = advertRepository.findAllByIdInAndStatus(advertIds, AdvertStatus.ACTIVE, params.toPageable())
+            val adverts =
+                advertRepository.findAllByIdInAndStatus(advertIds, AdvertStatus.ACTIVE, params.toPageable(sort))
 
             adverts.ui(advertIds)
 
@@ -61,7 +71,7 @@ class AdvertSearchServiceImpl(
                     nameEN = latin,
                     nameRU = cyrillic,
                     status = AdvertStatus.ACTIVE,
-                    pageable = params.toPageable()
+                    pageable = params.toPageable(sort)
                 )
 
             val advertIds = adverts.content.map { it.id }
@@ -69,13 +79,22 @@ class AdvertSearchServiceImpl(
         } else {
             val adverts = advertRepository.findAllByStatus(
                 status = AdvertStatus.ACTIVE,
-                pageable = params.toPageable(sort = Sort.by(Sort.Direction.DESC, "date"))
+                pageable = params.toPageable(sort = sort)
             )
             val advertIds = adverts.content.map { it.id }
             adverts.ui(advertIds)
         }
     }
 
+
+    override fun myAdverts(userId: String, paging: PagingParams): BasePageResponse<AdvertSearchResponse> {
+        val adverts = advertRepository.findAllByUserId(
+            userId = userId,
+            pageable = paging.toPageable(sort = Sort.by(Sort.Direction.DESC, "date"))
+        )
+        val advertIds = adverts.content.map { it.id }
+        return adverts.ui(advertIds)
+    }
 
     private fun Page<AdvertEntity>.ui(advertIds: List<String>): BasePageResponse<AdvertSearchResponse> {
         return this.paging { advert ->

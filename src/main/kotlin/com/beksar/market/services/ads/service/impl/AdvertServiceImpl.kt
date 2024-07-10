@@ -29,13 +29,13 @@ class AdvertServiceImpl(
         repository.deleteById(advertId)
     }
 
-    override fun add(request: AddOrUpdateAdvertRequest, userId: String) {
-        repository.saveWithException(
+    override fun add(request: AddOrUpdateAdvertRequest, userId: String): String {
+        return repository.saveWithException(
             AdvertEntity(
                 description = request.description.orEmpty(),
                 userId = userId
             )
-        )
+        ).id
     }
 
     override fun update(advertId: String, request: AddOrUpdateAdvertRequest) {
@@ -114,11 +114,4 @@ class AdvertServiceImpl(
         )
     }
 
-    override fun myAdverts(userId: String, paging: PagingParams): BasePageResponse<AdvertResponse> {
-        val adverts = repository.findAllByUserId(userId, paging.toPageable())
-        return adverts
-            .paging { p ->
-                p.toResponse()
-            }
-    }
 }
